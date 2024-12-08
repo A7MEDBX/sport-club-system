@@ -1,0 +1,385 @@
+/* General Styles */
+.home-container {
+    font-family: "Arial", sans-serif;
+    color: #333;
+}
+
+/* Hero Section */
+.hero-container {
+    position: relative;
+    background-image: url("../../assets/pexels-black-ibex-2040068-17264600.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    padding: 5rem 2rem;
+    text-align: center;
+    min-height: 90vh;
+}
+
+.hero-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 1;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    z-index: 5;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #32cd32;
+}
+
+.hero-subtitle {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    color: #a8d5ba;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    margin: 2rem 0;
+    line-height: 1.8;
+    color: #ccc;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.hero-button {
+    border: 1px solid #32cd32;
+    background-color: transparent;
+    color: #32cd32;
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border-radius: 5px;
+}
+
+.hero-button:hover {
+    background-color: green;
+    color: #ffffff;
+}
+
+.hero-sign-up {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.858);
+    color: #32cd32;
+}
+
+.hero-sign-up:hover {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.858);
+    color: #32cd32;
+}
+
+.hero-view-plans {
+    border-color: #32cd32;
+}
+
+.hero-contact-us {
+    border-color: #a8d5ba;
+}
+
+.hero-contact-us:hover {
+    background-color: #a8d5ba;
+    color: #000;
+}
+
+
+/* Features Section */
+.features-section {
+
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: #004d00;
+    margin-bottom: 20px;
+}
+
+.features-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.feature-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+}
+
+.feature-icon {
+    font-size: 2rem;
+    color: #00b300;
+    margin-bottom: 10px;
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.feature-text {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+
+/* Upcoming Events */
+
+.upcoming-events {
+    padding: 2rem;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.events-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #056608;
+}
+
+.event-timer {
+    border-top: 1px dotted;
+    text-align: center;
+    font-size: 1.2rem;
+    padding-top: 20px;
+    margin: 10px 0;
+    color: #333;
+}
+
+.event-timer h4 {
+    font-size: 1.5rem;
+    color: #056608;
+}
+
+.no-events {
+    text-align: center;
+    font-size: 1rem;
+    color: #777;
+}
+
+.events-grid {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 350px));
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.event-card {
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #056608;
+    margin-bottom: 0.5rem;
+}
+
+.event-date,
+.event-location {
+    margin: 5px;
+    font-size: 15px;
+    color: #555;
+}
+
+/* Top Programs Section */
+.programs-section {
+    padding: 40px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.programs-header {
+    font-size: 2rem;
+    color: #2d6a4f;
+    /* Green main color */
+    margin-bottom: 20px;
+}
+
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.program-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.program-card:hover {
+    transform: translateY(-10px);
+}
+
+.program-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.program-title {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    color: #2d6a4f;
+}
+
+.program-description {
+    font-size: 1rem;
+    padding: 0 10px;
+    color: #555;
+}
+
+.program-button {
+    margin: 20px;
+    padding: 10px 20px;
+    background-color: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.program-button:hover {
+    background-color: #1b4d3e;
+}
+
+/* FAQ Section */
+
+.faq-section {
+    padding: 40px;
+    background-color: #f9f9f9;
+}
+
+.faq-header {
+    font-size: 2rem;
+    text-align: center;
+    color: #2d6a4f;
+    margin-bottom: 20px;
+}
+
+.faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.faq-item:hover {
+    background-color: #eef7ee;
+}
+
+.faq-question {
+    font-size: 1.2rem;
+    color: #2d6a4f;
+}
+
+.faq-answer {
+    margin-top: 10px;
+    color: #555;
+}
+
+
+/* Testimonials Section */
+.testimonials-section {
+    padding: 40px 20px;
+    background-color: #f0f0f0;
+    text-align: center;
+}
+
+.testimonials-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.testimonial-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.testimonial-text {
+    font-size: 1rem;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.testimonial-author {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #004d00;
+}
+
+/* Call-to-Action Section */
+.cta-section {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #004d00;
+    color: white;
+}
+
+.cta-title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.cta-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}

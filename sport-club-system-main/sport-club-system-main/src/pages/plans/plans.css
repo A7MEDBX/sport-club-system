@@ -1,0 +1,116 @@
+.plans-container {
+    padding: 2rem;
+    text-align: center;
+}
+
+.plans-header {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.plan-button-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.plan-button {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.plan-button.active {
+    background-color: #4caf50;
+    color: white;
+}
+
+.plans {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.plan-card {
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    padding: 1.5rem;
+    margin: 1.5rem;
+    border-radius: 10px;
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.plan-card:hover {
+    transform: translateY(-10px);
+}
+
+.plan-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #4caf50;
+    margin-bottom: 1rem;
+}
+
+.plan-description {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #555;
+}
+
+.plan-features {
+    list-style: none;
+    text-align: left;
+    line-height: 1.5;
+    height: 200px;
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.plan-feature {
+    margin-bottom: 10px;
+}
+ 
+.plans .plan-card .see-features-btn{
+    color: #4caf50;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.feature-icon {
+    margin-right: 10px;
+}
+
+.plan-pricing {
+    margin-bottom: 1.5rem;
+}
+
+.price {
+    margin-top: 30px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.subscription-btn {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    margin-top: auto;
+}
+
+.subscription-btn:hover {
+    background-color: #45a049;
+}
