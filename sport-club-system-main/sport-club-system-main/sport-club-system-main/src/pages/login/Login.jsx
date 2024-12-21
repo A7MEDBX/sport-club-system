@@ -1,22 +1,25 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import Cookies from "js-cookie";
+
 
 function Login() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate(); // For navigation after successful login
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!userName || !password) {
       setErrorMessage("Both fields are required.");
       return;
     }
-  
+
     try {
       const response = await fetch("http://127.0.0.1:5000/api/login", {
         method: "POST",
@@ -24,13 +27,22 @@ function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username: userName, Password: password }),
+        credentials: "include", 
       });
-  
+      
+
       const result = await response.json();
-  
+
       if (response.ok) {
+        const { Member_ID, Member_Name, Member_Role } = result.data;
+
+        // Store user data in cookies
+        Cookies.set("member_id", Member_ID, { expires: 7 });
+        Cookies.set("member_name", Member_Name, { expires: 7 });
+        Cookies.set("member_role", Member_Role, { expires: 7 });
+
         alert("Login Successful");
-        // Redirect to dashboard or other page
+        navigate("/dashboard"); // Redirect to dashboard or another page
       } else {
         setErrorMessage(result.message || "Login failed.");
       }
@@ -39,7 +51,6 @@ function Login() {
       setErrorMessage("An error occurred. Please try again.");
     }
   };
-  
 
   return (
     <>

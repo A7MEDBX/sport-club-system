@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,session
 from flask_mail import Mail, Message
 from flask_cors import CORS
 import random
@@ -6,8 +6,11 @@ import datetime
 import sqlite3
 import hashlib
 import hmac
+import os
 STATIC_SALT = "NO_-@#000"
 app = Flask(__name__)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+app.secret_key="User0-A-B-X"
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -15,12 +18,12 @@ app.config['MAIL_USERNAME'] = 'elkhazaansc.customerservices@gmail.com'
 app.config['MAIL_PASSWORD'] = 'xyyu hpoz egsv vygl'  
 
 mail = Mail(app) 
-CORS(app)
+app.config['SESSION_TYPE'] = 'filesystem'  # Store session data on the server
 
 
 def signup_check(email):
 
-    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\SYS.db')
+    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
     cursor = conn.cursor()
 
 
@@ -32,25 +35,25 @@ def signup_check(email):
 
 
 def login_check(email, password):
-
-    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\SYS.db')
+    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
     cursor = conn.cursor()
 
-    # Retrieve the hashed password from the database
-    cursor.execute("SELECT * FROM Member WHERE Member_Email = ?", (email,))
-    user = cursor.fetchone()
-    conn.close()
+    try:
+        cursor.execute("SELECT * FROM Member WHERE Member_Email = ?", (email,))
+        user = cursor.fetchone()
 
-    if user:
-        stored_hashed_password = user[3]  
-       
-        hashed_password = password
-
-       
-        if hashed_password == stored_hashed_password:
-            return True
-
-    return False
+        if user:
+            stored_hashed_password = user[3]  
+             
+            hashed_password = password
+            if hashed_password == stored_hashed_password:
+                return True
+        return False
+    except Exception as e:
+        
+        return False
+    finally:
+        conn.close()
 
 
 def hashing(password):
@@ -141,27 +144,24 @@ def sign_up():
         birth_date = data.get('birthDate')
         email = data.get('email')
         password = data.get('password')
-        plan = data.get('plan')
-        plan= "NONE"
         hashed_password = hashing(password)
         if signup_check(email):
           return jsonify({"status": "Error", "message": "Email is already exist."}), 500
             
             
-        conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\SYS.db')
+        conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Member (
             Member_Name,
             Member_Email,
             Member_Password,
-            Member_phoneNumber,
+            Member_phone,
             Member_BirthDate,
-            Member_subscription_status,
             Member_Role)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
         """,
-        (user_name, email, hashed_password, number, birth_date,plan, "Member"))
+        (user_name, email, hashed_password, number, birth_date, "Member"))
         conn.commit()
         conn.close()
 
@@ -175,30 +175,112 @@ def sign_up():
         return jsonify({'status': 'Failed', 'message': 'An error occurred. Please try again.'}), 500
 
 
+@app.route('/api/UserData', methods=['POST'])
+def get_user_data():
+    data = request.get_json()
+    id = data.get('id')
+    if not id:
+        return jsonify({'status': 'Failed', 'message': 'Error sending Data'}), 400
+    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM Member WHERE Member_id = ?", (id,))
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        return jsonify({
+            'status': 'Success',
+            'data': {
+                'Member_ID': user[0],
+                'Member_Name': user[1],
+                'Member_Email': user[2],
+                'Member_phoneNumber': user[4],  # Adjust indices based on schema
+                'Member_BirthDate': user[5],
+                'Member_subscription_status': user[6],
+                'Member_Role': user[7]
+            }
+        })
+    else:
+        return jsonify({'status': 'Failed', 'message': 'User not found'}), 404
+
+
+@app.route('/api/EditUserData', methods=['POST'])
+def edit_user_data():
+    data=request.get_json()
+    user_id = data.get('id')
+    user_name = data.get('userName')
+    number = data.get('number')
+    address=data.get('address')
+    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+    cursor=conn.cursor()
+    cursor.execute("UPDATE Member SET Member_Name =?, Member_phoneNumber =?,member_Address =? WHERE Member_ID =?", (user_name, number,address, user_id))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'Success', 'message': 'Data Updated Successfully'})
+   
+
+
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
     try:
-        data = request.get_json() 
+        data = request.get_json()
         email = data.get('username')
         password = data.get('Password')
 
         if not email or not password:
             return jsonify({'status': 'Failed', 'message': 'Email and password are required'}), 400
 
-   
-        status = login_check(email, hashing(password))
+        hashed_password = hashing(password)
+        if login_check(email, hashed_password):
+            conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT Member_ID, Member_Name, Member_Role 
+                FROM Member WHERE Member_Email = ?
+            """, (email,))
+            user = cursor.fetchone()
+            conn.close()
 
-        if status:
-            return jsonify({'status': 'Success', 'message': 'Login Successful'}), 200
-        else:
-            return jsonify({'status': 'Failed', 'message': 'Invalid Email or Password'}), 401
+            if user:
+                member_id, member_name, member_role = user
+                session['user_id'] = member_id
+                session['user_name'] = member_name
+                session['user_role'] = member_role
+                return jsonify({
+                    'status': 'Success',
+                    'message': 'Login Successful',
+                    'data': {
+                        'Member_ID': member_id,
+                        'Member_Name': member_name,
+                        'Member_Role': member_role
+                    }
+                }), 200
+            else:
+                return jsonify({'status': 'Failed', 'message': 'User data retrieval failed'}), 500
+
+        return jsonify({'status': 'Failed', 'message': 'Invalid Email or Password'}), 401
 
     except Exception as e:
-        import traceback
-        print("Error occurred:")
-        print(traceback.format_exc())  
+        print("Error occurred during login:", e)
         return jsonify({'status': 'Failed', 'message': 'An error occurred. Please try again.'}), 500
+
+
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    try:
+        session.pop('user_id', None)
+        session.pop('user_name', None)
+        session.pop('user_role', None)
+        return jsonify({'status': 'Success', 'message': 'Logged out successfully.'}), 200
+    except Exception as e:
+        print("Error during logout:", e)
+        return jsonify({'status': 'Failed', 'message': 'An error occurred during logout.'}), 500
+
+
+
 @app.route('/api/reset-password', methods=['POST'])
 def reset_password():
     data = request.get_json()
@@ -220,7 +302,7 @@ def reset_password():
     if stored_otp['otp_code'] != otp_code:
         return jsonify({"status": "Error", "message": "Invalid OTP."}), 400
 
-    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\SYS.db')
+    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE Member SET Member_Password = ? WHERE Member_Email = ?", (hashing(new_password), email))
     conn.commit()
