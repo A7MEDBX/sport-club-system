@@ -18,7 +18,7 @@ app.config['MAIL_USERNAME'] = 'elkhazaansc.customerservices@gmail.com'
 app.config['MAIL_PASSWORD'] = 'xyyu hpoz egsv vygl'  
 
 mail = Mail(app) 
-app.config['SESSION_TYPE'] = 'filesystem'  # Store session data on the server
+app.config['SESSION_TYPE'] = 'filesystem'
 
 
 def signup_check(email):
@@ -175,6 +175,174 @@ def sign_up():
         return jsonify({'status': 'Failed', 'message': 'An error occurred. Please try again.'}), 500
 
 
+
+@app.route("/api/add_match", methods=["POST"])
+def add_match():
+ data=request.get_json()
+ try:
+     match_date=data.get('match_date')
+     match_start_time=data.get('match_time')
+     match_stadium=data.get('match_location')
+     match_FTeam=data.get('match_team1')
+     match_STeam=data.get('match_team2')
+     match_champoin=data.get('match_champoin')
+     conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+     cursor=conn.cursor()
+     cursor.execute("""INSERT INTO Match (Match_Date,Match_Start_Time,Match_Stadium,Match_FTeam,Match_STeam,Match_champion) VALUES (?,?,?,?,?,?)""",(match_date,match_start_time,match_stadium,match_FTeam,match_STeam,match_champoin))
+     conn.commit()
+     conn.close() 
+     return jsonify({'status': 'Success','message': 'Match added successfully'}),201
+ except Exception as e:
+     print('Error occurred:', e)
+     return jsonify({'status': 'Failed','message': 'An error occurred. Please try again.'}), 500
+    
+    
+@app.route('api/add_team',methods=['POST'])
+def add_team():
+    data=request.get_json()
+    try:
+        
+        Team_name=data('Team_name')
+        Team_type=data('Team_type')
+    
+        conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+        cursor=conn.cursor()
+        cursor.execute("""INSERT INTO Team (Team_Name,Team_Type) VALUES (?,?)""",(Team_name,Team_type))
+        conn.commit()
+        conn.close()
+        return jsonify({'status': 'Success','message': 'Match added successfully'}),201
+    except Exception as e:
+        print('Error occurred:', e)
+        return jsonify({'status': 'Failed','message': 'An error occurred. Please try again.'}), 500
+    
+    
+    
+
+@app.route('/add_item', methods=['POST'])
+def add_item():
+    data = request.get_json()  
+    try:
+       
+        item_name = data.get('item_name')
+        item_description = data.get('item_description')
+        item_type = data.get('item_type')
+        item_size = data.get('item_size')
+        item_price = data['item_price']
+        item_offer = data.get('item_offer')
+        item_colour = data.get('item_colour')
+
+        conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            INSERT INTO Item (item_name, Item_description, Item_type, Item_size, Item_price, Item_offer, Item_colour)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (item_name, item_description, item_type, item_size, item_price, item_offer, item_colour))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({'message': 'Item added successfully!'}), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+    
+    
+@app.route('api/add_news',methods=['POST'])
+def add_news():
+    data = request.get_json()  
+    try:
+       
+       news_title=data.get('title')
+       news_description=data.get('description')
+       news_image=data.get('image_url')
+                           
+
+       conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+       cursor = conn.cursor()
+       cursor.execute("""INSERT INTO News (News_title, News_description, News_imagelink) VALUES (?,?,?)""",(news_title,news_description,news_image))
+
+ 
+
+       conn.commit()
+       conn.close()
+
+       return jsonify({'message': 'Event added successfully!'}), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+
+@app.route('/api/add_sponser',methods=['POST'])
+def add_sponser():
+    data = request.get_json()  
+    try:
+       
+       Sponsors_name=data.get('Sponsors_name')
+       Sponsorship_Amount=data.get('Sponsorship_Amount')
+       Sponsors_expired_date=data.get('Sponsors_expired_date')
+                           
+
+       conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+       cursor = conn.cursor()
+       cursor.execute("""INSERT INTO Sponsors (Sponsors_name, Sponsorship_Amount, Sponsors_expired_date) VALUES (?,?,?)""",(Sponsors_name,Sponsorship_Amount,Sponsors_expired_date))
+ 
+
+       conn.commit()
+       conn.close()
+
+       return jsonify({'message': 'Event added successfully!'}), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+@app.rourte('/api/add_subscription_plane',methods=['POST'])
+def add_subscription_plane():
+    data = request.get_json()  
+    try:
+       
+       Subscription_Plan_type=data.get('Subscription_Plan_type')
+       Subscription_Amount=data.get('Subscription_Amount')
+       Subscription_Name=data.get('Subscription_Name')
+                           
+
+       conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+       cursor = conn.cursor()
+       cursor.execute("""INSERT INTO Subscription_Plan (Subscription_Plan_type, Subscription_Amount, Subscription_Name) VALUES (?,?,?)""",(Subscription_Plan_type,Subscription_Amount,Subscription_Name))
+
+       conn.commit()
+       conn.close()
+
+       return jsonify({'message': 'Event added successfully!'}), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/api/add_copon', methods=['POST'])
+def add_copon():
+    data = request.get_json()  
+    try:
+       
+       Copon_Disscount=data.get('Copon_Disscount')
+       Copon_timeofuses=data.get('Copon_timeofuses')
+       
+                           
+
+       conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+       cursor = conn.cursor()
+       cursor.execute("""INSERT INTO Copon (Copon_Disscount, Copon_timeofuses) VALUES (?,?)""",(Copon_Disscount,Copon_timeofuses))
+
+       conn.commit()
+       conn.close()
+
+       return jsonify({'message': 'Event added successfully!'}), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+    
 @app.route('/api/UserData', methods=['POST'])
 def get_user_data():
     data = request.get_json()
