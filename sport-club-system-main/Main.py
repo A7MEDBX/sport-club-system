@@ -82,6 +82,21 @@ def send_otp(email, otp_code):
 
 otp_storage = {}
 
+def add_purch(payment_id,purch_Date,copon_id,purch_type,purch_Amount,purch_Tprice,serve_id):
+    conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+    cursor = conn.cursor()
+    if purch_type == 'item':
+        cursor.execute("INSERT INTO Purchase (Payment_ID, Purch_Date, Coupon_ID, Purch_Type, Purch_Amount, Purch_TPrice, item_ID) VALUES (?,?,?,?,?,?,?)", (payment_id, purch_Date, copon_id, purch_type, purch_Amount, purch_Tprice, serve_id))
+        conn.commit()
+    elif purch_type == 'Ticket':
+        cursor.execute("INSERT INTO Purchase (Payment_ID, Purch_Date, Coupon_ID, Purch_Type, Purch_Amount, Purch_TPrice, Ticket_Id) VALUES (?,?,?,?,?,?,?)", (payment_id, purch_Date, copon_id, purch_type, purch_Amount, purch_Tprice, serve_id))
+        conn.commit()
+    elif purch_type=='subscribe_plan':
+        cursor.execute("INSERT INTO Purchase (Payment_ID, Purch_Date, Coupon_ID, Purch_Type, Purch_Amount, Purch_TPrice, subscribe_id) VALUES (?,?,?,?,?,?,?)", (payment_id, purch_Date, copon_id, purch_type, purch_Amount, purch_Tprice, serve_id))
+        conn.commit()
+    conn.close()
+    return True
+    
 
 
 @app.route('/api/request-otp', methods=['POST'])
@@ -197,7 +212,7 @@ def add_match():
      return jsonify({'status': 'Failed','message': 'An error occurred. Please try again.'}), 500
     
     
-@app.route('api/add_team',methods=['POST'])
+@app.route("/api/add_team",methods=['POST'])
 def add_team():
     data=request.get_json()
     try:
@@ -218,7 +233,7 @@ def add_team():
     
     
 
-@app.route('/add_item', methods=['POST'])
+@app.route("/add_item", methods=['POST'])
 def add_item():
     data = request.get_json()  
     try:
@@ -249,7 +264,7 @@ def add_item():
     
     
     
-@app.route('api/add_news',methods=['POST'])
+@app.route("/api/add_news",methods=['POST'])
 def add_news():
     data = request.get_json()  
     try:
@@ -275,7 +290,7 @@ def add_news():
 
 
 
-@app.route('/api/add_sponser',methods=['POST'])
+@app.route("/api/add_sponser",methods=['POST'])
 def add_sponser():
     data = request.get_json()  
     try:
@@ -298,7 +313,7 @@ def add_sponser():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
     
-@app.rourte('/api/add_subscription_plane',methods=['POST'])
+@app.route("/api/add_subscription_plane",methods=['POST'])
 def add_subscription_plane():
     data = request.get_json()  
     try:
@@ -320,11 +335,11 @@ def add_subscription_plane():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
     
-@app.route('/api/add_copon', methods=['POST'])
+@app.route("/api/add_copon", methods=['POST'])
 def add_copon():
     data = request.get_json()  
     try:
-       
+       Copon_Code=data.get('Copon_Disscount')
        Copon_Disscount=data.get('Copon_Disscount')
        Copon_timeofuses=data.get('Copon_timeofuses')
        
@@ -332,7 +347,7 @@ def add_copon():
 
        conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
        cursor = conn.cursor()
-       cursor.execute("""INSERT INTO Copon (Copon_Disscount, Copon_timeofuses) VALUES (?,?)""",(Copon_Disscount,Copon_timeofuses))
+       cursor.execute("""INSERT INTO Copon (Copon_Code, Copon_Disscount, Copon_timeofuses) VALUES (?,?,?)""",(Copon_Code,Copon_Disscount,Copon_timeofuses))
 
        conn.commit()
        conn.close()
@@ -341,17 +356,85 @@ def add_copon():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+@app.route("/api/Check_copon",methods=[ "POST"])
+def check_copon():
+    data=request.get_json()
+    try:   
+        copone_code=data['copone_code']
+        conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+        cursor=conn.cursor()
+        cursor.execute("SELECT * FROM Copon WHERE Copon_Code =?", (copone_code,))
+        result=cursor.fetchone()
+        Nnumberofuses=result[2]-1
+        if result and result[2]>0:
+            cursor.execute("""UPDATE Copon SET Copon_timeofuses = ? WHERE Copon_ID = ?""",(Nnumberofuses,result[0]) )
+            conn.commit()
+            conn.close()
+            return jsonify({'status': 'Success', 'data': {'discount' : result[1]}}), 200 
+        
+            
+        else :
+            conn.close()
+            return jsonify({'status': 'Failed', 'data': 'Your copon dose not has Exist or Expierd '}), 404
+        
+
+    except Exception as e:
+        return jsonify({'status': 'Failed', 'message': 'An error occurred. Please try again.'}), 500
+
+@app.route("/api/add_payment",methods=['POST'])
+def add_payment():
+    data = request.get_json()  
+    try:
+       
+       member_ID=data.get('member_ID')
+       member_Address=data.get('member_Address')
+       payment_type=data.get('payment_type')
+       purch_Date=data.get('purch_Date')
+       purch_type=data.get('purch_Type')
+       copon_id=data.get('copon_id', None)
+       purch_Amount=data.get('purch_Amount')
+       purch_Tprice=data.get('purch_Tprice')
+       item_ID=data.get('item_ID',None)
+       Ticket_Id=data.get('ticket_Id',None)
+       subscribe_id=data.get('subscribe_id',None)
+       
+       if not all([member_ID, member_Address, payment_type, purch_Date, purch_type, purch_Amount, purch_Tprice]):
+            return jsonify({'status': 'Failed', 'message': 'Missing required fields'}), 400
+       conn=sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
+       cursor = conn.cursor()
+       cursor.execute("""INSERT INTO Payment (member_ID, member_Address, payment_type) VALUES (?,?,?)""",(member_ID,member_Address,payment_type))
+       conn.commit()
+       payment_id = cursor.lastrowid
+       
+       if item_ID or Ticket_Id or subscribe_id:
+            serve_id = item_ID or Ticket_Id or subscribe_id  
+      
+            add_purch(payment_id,purch_Date,copon_id,purch_type,purch_Amount,purch_Tprice,serve_id)
+            conn.close()
+            return jsonify({'status': 'Success', 'message': 'Purchase added successfully!'}), 200
+            
+       else:
+            conn.close()
+            return jsonify({'status': 'Failed', 'message': 'serv_id  required'}), 400
+       
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
     
     
-@app.route('/api/UserData', methods=['POST'])
+
+
+    
+@app.route("/api/UserData", methods=['POST'])
 def get_user_data():
     data = request.get_json()
-    id = data.get('id')
+    id_ = data.get('id')
     if not id:
         return jsonify({'status': 'Failed', 'message': 'Error sending Data'}), 400
     conn = sqlite3.connect(r'C:\YD.Project\sport-club-system-main\Data base\sports_management.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Member WHERE Member_id = ?", (id,))
+    cursor.execute("SELECT * FROM Member WHERE Member_id = ?", (id_,))
     user = cursor.fetchone()
     conn.close()
 
@@ -362,7 +445,7 @@ def get_user_data():
                 'Member_ID': user[0],
                 'Member_Name': user[1],
                 'Member_Email': user[2],
-                'Member_phoneNumber': user[4],  # Adjust indices based on schema
+                'Member_phoneNumber': user[4],  
                 'Member_BirthDate': user[5],
                 'Member_subscription_status': user[6],
                 'Member_Role': user[7]
@@ -372,7 +455,7 @@ def get_user_data():
         return jsonify({'status': 'Failed', 'message': 'User not found'}), 404
 
 
-@app.route('/api/EditUserData', methods=['POST'])
+@app.route("/api/EditUserData", methods=['POST'])
 def edit_user_data():
     data=request.get_json()
     user_id = data.get('id')
